@@ -1,0 +1,6 @@
+# Ignore system and OneDrive files
+AppData/
+*.lnk
+*.dat
+node_modules/
+desktop.ini
