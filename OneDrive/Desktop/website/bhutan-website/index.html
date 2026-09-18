@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Druk Yul — A Portrait of Bhutan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;600&family=Noto+Serif+Tibetan:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #3B0F16;
+    --maroon: #6E1F2B;
+    --maroon-deep: #501420;
+    --saffron: #D9A441;
+    --saffron-soft: #EFD8A0;
+    --indigo: #1B2740;
+    --indigo-deep: #121A2C;
+    --pine: #2E4B3F;
+    --parchment: #F6EFDD;
+    --parchment-alt: #EFE4C9;
+    --paper-line: rgba(59,15,22,0.14);
+    --text-main: #3B0F16;
+    --text-soft: #6B4A44;
+    --bg-page: var(--parchment);
+    --card-border: rgba(59,15,22,0.22);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg-page: #17110F;
+      --text-main: #F1E6D8;
+      --text-soft: #C9B8A8;
+      --parchment-alt: #221A16;
+      --card-border: rgba(241,230,216,0.18);
+      --paper-line: rgba(241,230,216,0.14);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17110F;
+    --text-main: #F1E6D8;
+    --text-soft: #C9B8A8;
+    --parchment-alt: #221A16;
+    --card-border: rgba(241,230,216,0.18);
+    --paper-line: rgba(241,230,216,0.14);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-page);
+    color:var(--text-main);
+    font-family:'Work Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    transition:background 0.25s ease, color 0.25s ease;
+  }
+
+  /* language-aware type stacks */
+  body.lang-devanagari { font-family:'Noto Serif Devanagari','Work Sans',serif; }
+  body.lang-devanagari h1, body.lang-devanagari h2, body.lang-devanagari .display {
+    font-family:'Noto Serif Devanagari', serif;
+  }
+  body.lang-tibetan { font-family:'Noto Serif Tibetan','Work Sans',serif; }
+  body.lang-tibetan h1, body.lang-tibetan h2, body.lang-tibetan .display {
+    font-family:'Noto Serif Tibetan', serif;
+  }
+  body.lang-latin h1, body.lang-latin h2, body.lang-latin .display {
+    font-family:'Fraunces', Georgia, serif;
+  }
+
+  h1,h2{ margin:0; font-weight:600; color:var(--text-main); }
+  p{ margin:0; }
+
+  a{ color:inherit; }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 28px; }
+
+  /* NAV */
+  header.nav{
+    position:sticky; top:0; z-index:20;
+    background:var(--bg-page);
+    border-bottom:1px solid var(--paper-line);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto; padding:18px 28px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .wordmark{
+    font-family:'Fraunces', Georgia, serif;
+    font-style:italic;
+    font-size:1.25rem;
+    letter-spacing:0.01em;
+    color:var(--maroon);
+    white-space:nowrap;
+  }
+  :root[data-theme="dark"] .wordmark, body[data-theme="dark"] .wordmark {}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .wordmark{ color:var(--saffron); }
+  }
+  :root[data-theme="dark"] .wordmark{ color:var(--saffron); }
+
+  .lang-select-wrap{
+    position:relative;
+    display:flex; align-items:center; gap:8px;
+  }
+  .lang-select-wrap label{
+    font-size:0.82rem; color:var(--text-soft);
+  }
+  select#langSelect{
+    appearance:none; -webkit-appearance:none;
+    background:var(--parchment-alt);
+    color:var(--text-main);
+    border:1px solid var(--card-border);
+    border-radius:3px;
+    padding:8px 34px 8px 14px;
+    font-size:0.92rem;
+    font-family:inherit;
+    cursor:pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0 L5 6 L10 0 Z' fill='%236B4A44'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+  }
+  select#langSelect:focus-visible{
+    outline:2px solid var(--saffron); outline-offset:2px;
+  }
+
+  /* HERO */
+  .hero{
+    background: linear-gradient(180deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+    color:#F1E6D8;
+    position:relative;
+    overflow:hidden;
+    padding:78px 0 0 0;
+  }
+  .hero-inner{
+    max-width:920px; margin:0 auto; padding:0 28px 46px;
+    position:relative; z-index:2;
+  }
+  .flags{
+    display:flex; gap:9px; margin-bottom:34px;
+  }
+  .flags span{
+    width:15px; height:22px;
+    display:inline-block;
+    clip-path: polygon(0 0, 100% 12%, 100% 100%, 0 88%);
+  }
+  .flags span:nth-child(1){ background:#D9A441; }
+  .flags span:nth-child(2){ background:#F1E6D8; }
+  .flags span:nth-child(3){ background:#6E1F2B; }
+  .flags span:nth-child(4){ background:#2E4B3F; }
+  .flags span:nth-child(5){ background:#1B2740; border:1px solid rgba(241,230,216,0.3); }
+
+  .hero h1{
+    font-family:'Fraunces', Georgia, serif;
+    font-size:clamp(2.4rem, 6vw, 4rem);
+    line-height:1.05;
+    color:#F8F1E4;
+    max-width:14ch;
+  }
+  body.lang-devanagari .hero h1{ font-family:'Noto Serif Devanagari', serif; max-width:16ch; font-size:clamp(2rem,5.4vw,3.2rem);}
+  body.lang-tibetan .hero h1{ font-family:'Noto Serif Tibetan', serif; max-width:18ch; font-size:clamp(1.8rem,5vw,2.9rem);}
+
+  .hero .tagline{
+    margin-top:20px;
+    max-width:44ch;
+    font-size:1.12rem;
+    color:#D9CBB8;
+  }
+
+  .peaks{
+    display:block; width:100%; height:auto;
+    margin-top:40px;
+  }
+
+  /* SECTIONS */
+  section.block{ padding:64px 0; border-bottom:1px solid var(--paper-line); }
+  section.block:last-of-type{ border-bottom:none; }
+  .alt-bg{ background:var(--parchment-alt); }
+
+  .section-label{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:22px;
+  }
+  .section-label .rule{
+    width:34px; height:2px; background:var(--saffron);
+    flex:none;
+  }
+  .section-label span{
+    font-size:0.86rem; color:var(--maroon);
+    letter-spacing:0.01em;
+  }
+  :root[data-theme="dark"] .section-label span{ color:var(--saffron); }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .section-label span{ color:var(--saffron);} }
+
+  section.block h2{
+    font-size:clamp(1.5rem, 3vw, 2.05rem);
+    max-width:20ch;
+    margin-bottom:20px;
+  }
+  section.block .body-text{
+    max-width:66ch;
+    font-size:1.05rem;
+    color:var(--text-main);
+  }
+  body.lang-tibetan section.block .body-text{ font-size:1.08rem; line-height:1.9; }
+
+  /* FACTS GRID */
+  .facts-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:1px;
+    background:var(--card-border);
+    border:1px solid var(--card-border);
+    margin-top:8px;
+  }
+  .fact{
+    background:var(--bg-page);
+    padding:22px 22px;
+  }
+  .fact .k{
+    font-size:0.86rem;
+    color:var(--text-soft);
+    margin-bottom:6px;
+  }
+  .fact .v{
+    font-size:1.12rem;
+    font-family:'Fraunces', Georgia, serif;
+    color:var(--maroon);
+  }
+  :root[data-theme="dark"] .fact .v{ color:var(--saffron); }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .fact .v{ color:var(--saffron);} }
+  body.lang-devanagari .fact .v{ font-family:'Noto Serif Devanagari', serif; }
+  body.lang-tibetan .fact .v{ font-family:'Noto Serif Tibetan', serif; }
+
+  @media (max-width:560px){
+    .facts-grid{ grid-template-columns:1fr; }
+    .nav-inner{ padding:14px 20px; }
+    .wrap, .hero-inner{ padding-left:20px; padding-right:20px; }
+  }
+
+  footer{
+    padding:36px 0 48px;
+  }
+  footer p{
+    font-size:0.86rem;
+    color:var(--text-soft);
+    max-width:56ch;
+  }
+</style>
+</head>
+<body class="lang-latin">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="wordmark">Druk Yul</div>
+    <div class="lang-select-wrap">
+      <label for="langSelect">LANGUAGE</label>
+      <select id="langSelect" aria-label="Choose language">
+        <option value="en">English</option>
+        <option value="dz">རྫོང་ཁ (Dzongkha)</option>
+        <option value="ne">नेपाली (Nepali)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="flags">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <h1 data-key="hero_title">The Kingdom of Bhutan</h1>
+    <p class="tagline" data-key="hero_tagline">A small Himalayan nation between India and China, known for measuring progress by happiness as well as by wealth.</p>
+  </div>
+  <svg class="peaks" viewBox="0 0 920 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="0,140 0,90 120,35 220,80 300,20 400,95 470,50 560,100 650,40 760,90 850,55 920,100 920,140" fill="#121A2C"/>
+    <polygon points="0,140 0,110 140,70 260,115 360,65 460,120 540,80 640,125 740,75 830,115 920,90 920,140" fill="#1B2740" opacity="0.85"/>
+  </svg>
+</section>
+
+<main>
+  <section class="block">
+    <div class="wrap">
+      <div class="section-label"><span class="rule"></span><span data-key="about_label">about</span></div>
+      <h2 data-key="about_title">A kingdom that opened slowly, on its own terms</h2>
+      <p class="body-text" data-key="about_text">Bhutan is a small Himalayan kingdom wedged between India and China, known for closely guarding its culture and environment while opening carefully to the outside world. Rather than measuring progress by GDP alone, Bhutan pioneered Gross National Happiness as a guiding philosophy, balancing economic growth with cultural preservation, environmental protection, and good governance.</p>
+    </div>
+  </section>
+
+  <section class="block alt-bg">
+    <div class="wrap">
+      <div class="section-label"><span class="rule"></span><span data-key="geo_label">geography</span></div>
+      <h2 data-key="geo_title">From subtropical plains to unclimbed summits</h2>
+      <p class="body-text" data-key="geo_text">Bhutan's landscape rises from subtropical plains in the south to snow-capped Himalayan peaks in the north, including Gangkhar Puensum, one of the highest unclimbed mountains in the world. Dense forests cover over 70% of the country, which the constitution requires to remain under permanent forest cover.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-label"><span class="rule"></span><span data-key="culture_label">culture</span></div>
+      <h2 data-key="culture_title">Life shaped by dzongs, prayer flags, and festival</h2>
+      <p class="body-text" data-key="culture_text">Buddhism shapes daily life in Bhutan, visible in its dzongs (fortress-monasteries), prayer flags, and festivals known as tshechus. Traditional dress — the gho for men and kira for women — is still worn widely, and architecture, art, and craftsmanship follow centuries-old conventions protected by law.</p>
+    </div>
+  </section>
+
+  <section class="block alt-bg">
+    <div class="wrap">
+      <div class="section-label"><span class="rule"></span><span data-key="facts_label">quick facts</span></div>
+      <h2 data-key="facts_title">Bhutan at a glance</h2>
+      <div class="facts-grid">
+        <div class="fact"><div class="k" data-key="f_capital_k">Capital</div><div class="v" data-key="f_capital_v">Thimphu</div></div>
+        <div class="fact"><div class="k" data-key="f_currency_k">Currency</div><div class="v" data-key="f_currency_v">Ngultrum (Nu.)</div></div>
+        <div class="fact"><div class="k" data-key="f_pop_k">Population</div><div class="v" data-key="f_pop_v">approx. 787,000</div></div>
+        <div class="fact"><div class="k" data-key="f_lang_k">Official language</div><div class="v" data-key="f_lang_v">Dzongkha</div></div>
+        <div class="fact"><div class="k" data-key="f_religion_k">Religion</div><div class="v" data-key="f_religion_v">Vajrayana Buddhism</div></div>
+        <div class="fact"><div class="k" data-key="f_bird_k">National bird</div><div class="v" data-key="f_bird_v">Raven</div></div>
+        <div class="fact"><div class="k" data-key="f_animal_k">National animal</div><div class="v" data-key="f_animal_v">Takin</div></div>
+        <div class="fact"><div class="k" data-key="f_currency2_k">Currency peg</div><div class="v" data-key="f_currency2_v">1:1 with Indian Rupee</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-key="footer_text">Made as a simple demo page. Content is a general overview, not exhaustive.</p>
+  </div>
+</footer>
+
+<script>
+const translations = {
+  en: {
+    nav_lang_label: "Language",
+    hero_title: "The Kingdom of Bhutan",
+    hero_tagline: "A small Himalayan nation between India and China, known for measuring progress by happiness as well as by wealth.",
+    about_label: "about",
+    about_title: "A kingdom that opened slowly, on its own terms",
+    about_text: "Bhutan is a small Himalayan kingdom wedged between India and China, known for closely guarding its culture and environment while opening carefully to the outside world. Rather than measuring progress by GDP alone, Bhutan pioneered Gross National Happiness as a guiding philosophy, balancing economic growth with cultural preservation, environmental protection, and good governance.",
+    geo_label: "geography",
+    geo_title: "From subtropical plains to unclimbed summits",
+    geo_text: "Bhutan's landscape rises from subtropical plains in the south to snow-capped Himalayan peaks in the north, including Gangkhar Puensum, one of the highest unclimbed mountains in the world. Dense forests cover over 70% of the country, which the constitution requires to remain under permanent forest cover.",
+    culture_label: "culture",
+    culture_title: "Life shaped by dzongs, prayer flags, and festival",
+    culture_text: "Buddhism shapes daily life in Bhutan, visible in its dzongs (fortress-monasteries), prayer flags, and festivals known as tshechus. Traditional dress — the gho for men and kira for women — is still worn widely, and architecture, art, and craftsmanship follow centuries-old conventions protected by law.",
+    facts_label: "quick facts",
+    facts_title: "Bhutan at a glance",
+    f_capital_k: "Capital", f_capital_v: "Thimphu",
+    f_currency_k: "Currency", f_currency_v: "Ngultrum (Nu.)",
+    f_pop_k: "Population", f_pop_v: "approx. 787,000",
+    f_lang_k: "Official language", f_lang_v: "Dzongkha",
+    f_religion_k: "Religion", f_religion_v: "Vajrayana Buddhism",
+    f_bird_k: "National bird", f_bird_v: "Raven",
+    f_animal_k: "National animal", f_animal_v: "Takin",
+    f_currency2_k: "Currency peg", f_currency2_v: "1:1 with Indian Rupee",
+    footer_text: "Made as a simple demo page. Content is a general overview, not exhaustive."
+  },
+  dz: {
+    nav_lang_label: "སྐད་ཡིག",
+    hero_title: "འབྲུག་རྒྱལ་ཁབ།",
+    hero_tagline: "རྒྱ་གར་དང་རྒྱ་ནག་གི་བར་ནའི་ཧི་མ་ལ་ཡའི་རྒྱལ་ཁབ་ཆུང་ཀུ་ཞིག་ཨིནམ་ད། དངུལ་འབྱོར་རྐྱངམ་ཅིག་མེན་པར་དགའ་སྐྱིད་ཀྱིས་ཡང་ཡར་རྒྱས་བརྟག་དཔྱད་འབད་མི།",
+    about_label: "སྐོར་ལས།",
+    about_title: "རང་གི་ཐབས་ལམ་ནང་དལ་ཁར་ཁ་ཕྱེ་བའི་རྒྱལ་ཁབ།",
+    about_text: "འབྲུག་ཡུལ་ནི་རྒྱ་གར་དང་རྒྱ་ནག་གི་བར་ན་ཡོད་པའི་ཧི་མ་ལ་ཡའི་རྒྱལ་ཁབ་ཆུང་ཀུ་ཞིག་ཨིནམ་ད། རང་གི་རིག་གནས་དང་མཐའ་འཁོར་གནས་སྟངས་ལེགས་ཤོམ་སྲུང་སྐྱོབ་འབད་དེ་ཕྱི་ཁའི་འཛམ་གླིང་དང་གལ་ཏེ་ཁར་འབྲེལ་བ་བརྒྱུད་དེ་འོང་། GDP རྐྱངམ་ཅིག་གིས་ཡར་རྒྱས་མི་བརྟག་པར། འབྲུག་ཡུལ་གྱིས་སྤྱི་ཡོངས་དགའ་སྐྱིད་ཟེར་བའི་ལམ་སྟོན་གྱི་གྲུབ་དོན་ཞིག་གསར་གཏོད་འབད་ཡི་ཞིནམ་ལས་དཔལ་འབྱོར་ཡར་རྒྱས་དང་རིག་གནས་སྲུང་སྐྱོབ། མཐའ་འཁོར་སྲུང་སྐྱོབ། ལེགས་ཤོམ་གྱི་སྲིད་བྱུས་ཚུ་ཆ་མཉམ་མཐུན་སྒྲིག་འབད་ཡོདཔ།",
+    geo_label: "ས་ཁམས།",
+    geo_title: "ལྷོ་ཕྱོགས་ཀྱི་ཐང་ཆེན་ནས་བྱང་ཕྱོགས་ཀྱི་གངས་རིའི་རྩེ་མོ་བར་དུ།",
+    geo_text: "འབྲུག་ཡུལ་གྱི་ས་ཁམས་ནི་ལྷོ་ཕྱོགས་ཀྱི་དྲོད་ཤུགས་ཅན་གྱི་ཐང་ཆེན་ནས་བྱང་ཕྱོགས་ཀྱི་གངས་རིའི་རྩེ་མོ་བར་དུ་མཐོ་ཞིང་། གངས་དཀར་སྤུན་གསུམ་ཟེར་བའི་རི་བོ་འདི་འཛམ་གླིང་གི་མཐོ་ཤོས་ཀྱི་གངས་རི་མ་འཛེགས་པའི་ནང་ནས་གཅིག་ཨིན། རྒྱལ་ཁབ་འདིའི་བརྒྱ་ཆ་བདུན་ཅུ་ལྷག་ནགས་ཚལ་གྱིས་ཁེབས་ཡོད་ཅིང་། རྩ་ཁྲིམས་ནང་ནགས་ཚལ་འདི་རྟག་ཏུ་སྲུང་སྐྱོབ་འབད་དགོཔ་བཀོད་ཡོདཔ།",
+    culture_label: "རིག་གནས།",
+    culture_title: "རྫོང་། དར་ལྕོག་དང་དུས་སྟོན་གྱིས་གཟུགས་བཀོད་འབད་བའི་མི་ཚེ།",
+    culture_text: "ནང་པའི་ཆོས་ཀྱིས་འབྲུག་པའི་ཉིན་རེའི་མི་ཚེ་གཟུགས་བཀོད་འབདཝ་ཨིན་མས། རྫོང་། དར་ལྕོག་དང་ཚེས་བཅུ་ཟེར་བའི་དུས་སྟོན་ཚུ་ནང་མཐོང་ཚུགས། གོས་ཀྱི་སྲོལ་རྒྱུན— སྐྱེས་པ་ལུ་གོ། བུད་མེད་ལུ་ཀི་ར— ད་ལྟོ་ཡང་མང་ཤོས་ཀྱིས་གོན་དོ། བཟོ་རིག་དང་བཟོ་བཀོད་ཚུ་ཁྲིམས་ཀྱིས་སྲུང་སྐྱོབ་འབད་བའི་ལོ་ངོ་བརྒྱ་ཕྲག་མང་པོའི་སྲོལ་རྒྱུན་ལུ་འབྲེལ་ཡོད་ཨིན།",
+    facts_label: "གནད་དོན་གནད་བསྡུས།",
+    facts_title: "འབྲུག་ཡུལ་གྱི་གནད་དོན་མདོར་བསྡུས།",
+    f_capital_k: "རྒྱལ་ས།", f_capital_v: "ཐིམ་ཕུག",
+    f_currency_k: "དངུལ་རིགས།", f_currency_v: "ང་ལྟམ (Nu.)",
+    f_pop_k: "མི་འབོར།", f_pop_v: "ཉུང་མཐའ་ ༧,༨༧,༠༠༠ ཙམ",
+    f_lang_k: "སྐད་ཡིག་གཙོ་བོ།", f_lang_v: "རྫོང་ཁ",
+    f_religion_k: "ཆོས་ལུགས།", f_religion_v: "རྡོ་རྗེ་ཐེག་པའི་ནང་པའི་ཆོས",
+    f_bird_k: "རྒྱལ་ཡོངས་བྱ།", f_bird_v: "ཁྭ་ཏ",
+    f_animal_k: "རྒྱལ་ཡོངས་སེམས་ཅན།", f_animal_v: "འཏག་ཀིན",
+    f_currency2_k: "དངུལ་གྱི་གོང་ཚད།", f_currency2_v: "རྒྱ་གར་གྱི་སྒོར་མོ་དང་1:1",
+    footer_text: "འདི་དཔེ་སྟོན་ཤོག་ལེབ་ཡོངས་སུ་གྲུབ་སྟེ་བཟོ་ཡི། ནང་དོན་ནི་སྤྱིར་བཏང་གནས་ཚུལ་ཅིག་ཨིནམ་ལས་ཆ་ཚང་མིན།"
+  },
+  ne: {
+    nav_lang_label: "भाषा",
+    hero_title: "भुटान राज्य",
+    hero_tagline: "भारत र चीनको बीचमा रहेको एउटा सानो हिमाली राष्ट्र, जसले सम्पत्तिका साथसाथै खुशीले पनि प्रगति मापन गर्छ।",
+    about_label: "बारेमा",
+    about_title: "आफ्नै तरिकाले बिस्तारै खुलेको राज्य",
+    about_text: "भुटान भारत र चीनको बीचमा अवस्थित एउटा सानो हिमाली राज्य हो, जसले आफ्नो संस्कृति र वातावरणलाई होसियारीपूर्वक जोगाउँदै बाहिरी संसारसँग बिस्तारै खुल्दै आएको छ। कुल गार्हस्थ्य उत्पादनलाई मात्र प्रगतिको मापन नमानेर, भुटानले सकल राष्ट्रिय खुशी (Gross National Happiness) लाई मार्गदर्शक दर्शनको रूपमा अपनायो, जसले आर्थिक विकास, सांस्कृतिक संरक्षण, वातावरणीय सुरक्षा र सुशासनबीच सन्तुलन कायम गर्छ।",
+    geo_label: "भूगोल",
+    geo_title: "उपोष्णकटिबन्धीय मैदानदेखि नचढिएका हिमशिखरसम्म",
+    geo_text: "भुटानको भूभाग दक्षिणमा उपोष्णकटिबन्धीय मैदानदेखि उत्तरमा हिउँले ढाकिएका हिमाली शिखरहरूसम्म फैलिएको छ, जसमा विश्वका सबैभन्दा अग्ला नचढिएका पर्वतहरूमध्ये एक गान्खर पुएनसुम पनि पर्छ। देशको ७०% भन्दा बढी भूभाग घना जंगलले ढाकेको छ, र संविधानले यो वन क्षेत्र सधैं कायम राख्नुपर्ने व्यवस्था गरेको छ।",
+    culture_label: "संस्कृति",
+    culture_title: "जोङ, प्रार्थना झण्डा र चाडपर्वले आकार दिएको जीवन",
+    culture_text: "बौद्ध धर्मले भुटानको दैनिक जीवनलाई आकार दिन्छ, जुन त्यहाँका जोङ (किल्ला-गुम्बा), प्रार्थना झण्डा, र त्शेचु भनिने चाडपर्वहरूमा देखिन्छ। परम्परागत पोशाक — पुरुषका लागि गो र महिलाका लागि किरा — अझै पनि व्यापक रूपमा लगाइन्छ, र वास्तुकला, कला र शिल्पकलाले कानूनद्वारा संरक्षित शताब्दियौं पुरानो परम्परा पछ्याउँछन्।",
+    facts_label: "छोटो तथ्यहरू",
+    facts_title: "एक नजरमा भुटान",
+    f_capital_k: "राजधानी", f_capital_v: "थिम्पू",
+    f_currency_k: "मुद्रा", f_currency_v: "न्गुल्ट्रम (Nu.)",
+    f_pop_k: "जनसंख्या", f_pop_v: "लगभग ७,८७,०००",
+    f_lang_k: "आधिकारिक भाषा", f_lang_v: "जोङखा",
+    f_religion_k: "धर्म", f_religion_v: "वज्रयान बौद्ध धर्म",
+    f_bird_k: "राष्ट्रिय चरा", f_bird_v: "काग (Raven)",
+    f_animal_k: "राष्ट्रिय पशु", f_animal_v: "तकिन",
+    f_currency2_k: "मुद्रा दर", f_currency2_v: "भारतीय रुपैयाँसँग १:१",
+    footer_text: "यो एउटा साधारण नमूना पृष्ठको रूपमा बनाइएको हो। सामग्री सामान्य जानकारीमूलक हो, विस्तृत होइन।"
+  },
+  hi: {
+    nav_lang_label: "भाषा",
+    hero_title: "भूटान राज्य",
+    hero_tagline: "भारत और चीन के बीच बसा एक छोटा हिमालयी राष्ट्र, जो धन के साथ-साथ खुशी से भी प्रगति मापने के लिए जाना जाता है।",
+    about_label: "परिचय",
+    about_title: "अपनी ही शर्तों पर धीरे-धीरे खुला राज्य",
+    about_text: "भूटान भारत और चीन के बीच बसा एक छोटा हिमालयी राज्य है, जो अपनी संस्कृति और पर्यावरण की सावधानीपूर्वक रक्षा करते हुए बाहरी दुनिया के लिए धीरे-धीरे खुल रहा है। केवल जीडीपी से प्रगति मापने के बजाय, भूटान ने सकल राष्ट्रीय खुशी (Gross National Happiness) को एक मार्गदर्शक सिद्धांत के रूप में अपनाया, जो आर्थिक विकास को सांस्कृतिक संरक्षण, पर्यावरण सुरक्षा और सुशासन के साथ संतुलित करता है।",
+    geo_label: "भूगोल",
+    geo_title: "उपोष्णकटिबंधीय मैदानों से लेकर बिना चढ़ी चोटियों तक",
+    geo_text: "भूटान की भूमि दक्षिण में उपोष्णकटिबंधीय मैदानों से लेकर उत्तर में बर्फ से ढकी हिमालयी चोटियों तक फैली हुई है, जिसमें दुनिया की सबसे ऊँची बिना चढ़ी चोटियों में से एक, गंगखर पुएनसुम भी शामिल है। देश के 70% से अधिक हिस्से पर घने जंगल हैं, और संविधान के अनुसार इस वन क्षेत्र को स्थायी रूप से बनाए रखना आवश्यक है।",
+    culture_label: "संस्कृति",
+    culture_title: "ज़ोंग, प्रार्थना ध्वजाओं और त्योहारों से गढ़ा जीवन",
+    culture_text: "बौद्ध धर्म भूटान के दैनिक जीवन को आकार देता है, जो वहाँ के ज़ोंग (किले-मठ), प्रार्थना ध्वजाओं और त्शेचु नामक त्योहारों में दिखाई देता है। पारंपरिक पोशाक — पुरुषों के लिए घो और महिलाओं के लिए किरा — आज भी व्यापक रूप से पहनी जाती है, और वास्तुकला, कला व शिल्पकला कानून द्वारा संरक्षित सदियों पुरानी परंपराओं का पालन करती हैं।",
+    facts_label: "संक्षिप्त तथ्य",
+    facts_title: "एक नज़र में भूटान",
+    f_capital_k: "राजधानी", f_capital_v: "थिम्पू",
+    f_currency_k: "मुद्रा", f_currency_v: "गुल्ट्रम (Nu.)",
+    f_pop_k: "जनसंख्या", f_pop_v: "लगभग 7,87,000",
+    f_lang_k: "राजभाषा", f_lang_v: "जोंखा",
+    f_religion_k: "धर्म", f_religion_v: "वज्रयान बौद्ध धर्म",
+    f_bird_k: "राष्ट्रीय पक्षी", f_bird_v: "रेवन (कौआ प्रजाति)",
+    f_animal_k: "राष्ट्रीय पशु", f_animal_v: "तकिन",
+    f_currency2_k: "मुद्रा दर", f_currency2_v: "भारतीय रुपये के साथ 1:1",
+    footer_text: "यह एक सरल डेमो पृष्ठ के रूप में बनाया गया है। सामग्री सामान्य जानकारी है, संपूर्ण नहीं।"
+  }
+};
+
+const scriptClass = { en: "lang-latin", dz: "lang-tibetan", ne: "lang-devanagari", hi: "lang-devanagari" };
+
+function applyLanguage(lang) {
+  const dict = translations[lang] || translations.en;
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.body.classList.remove("lang-latin", "lang-devanagari", "lang-tibetan");
+  document.body.classList.add(scriptClass[lang] || "lang-latin");
+  document.documentElement.lang = lang;
+}
+
+document.getElementById("langSelect").addEventListener("change", (e) => {
+  applyLanguage(e.target.value);
+});
+
+applyLanguage("en");
+</script>
+
+</body>
+</html>
