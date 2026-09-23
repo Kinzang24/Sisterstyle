@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import db from "@/lib/db";
+import { queryOne } from "@/lib/db";
 import { authConfig } from "./auth.config";
 
 // Full config, including the database-backed Credentials provider. This
@@ -20,9 +20,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = db
-          .prepare("SELECT * FROM users WHERE email = ?")
-          .get(String(credentials.email).toLowerCase().trim());
+        const user = await queryOne("SELECT * FROM users WHERE email = $1", [
+          String(credentials.email).toLowerCase().trim(),
+        ]);
         if (!user) return null;
 
         const valid = bcrypt.compareSync(credentials.password, user.password_hash);
