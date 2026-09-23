@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { queryOne, run } from "@/lib/db";
 import { auth } from "@/auth";
 
 function toApi(p) {
@@ -11,7 +11,7 @@ function toApi(p) {
 
 export async function GET(req, { params }) {
   const { id } = await params;
-  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
+  const product = await queryOne("SELECT * FROM products WHERE id = $1", [id]);
   if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(toApi(product));
 }
@@ -22,7 +22,7 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Admin access required" }, { status: 403 });
   }
   const { id } = await params;
-  const existing = db.prepare("SELECT id FROM products WHERE id = ?").get(id);
+  const existing = await queryOne("SELECT id FROM products WHERE id = $1", [id]);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
@@ -31,12 +31,12 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Please provide a valid name and price" }, { status: 400 });
   }
 
-  db.prepare(
-    "UPDATE products SET name=?, tags=?, price=?, category=?, image_url=? WHERE id=?"
-  ).run(name.trim(), tags || "", Math.round(price), category || "new", imageUrl || "", id);
+  const { rows } = await run(
+    "UPDATE products SET name=$1, tags=$2, price=$3, category=$4, image_url=$5 WHERE id=$6 RETURNING *",
+    [name.trim(), tags || "", Math.round(price), category || "new", imageUrl || "", id]
+  );
 
-  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
-  return NextResponse.json(toApi(product));
+  return NextResponse.json(toApi(rows[0]));
 }
 
 export async function DELETE(req, { params }) {
@@ -45,6 +45,6 @@ export async function DELETE(req, { params }) {
     return NextResponse.json({ error: "Admin access required" }, { status: 403 });
   }
   const { id } = await params;
-  db.prepare("DELETE FROM products WHERE id = ?").run(id);
+  await run("DELETE FROM products WHERE id = $1", [id]);
   return NextResponse.json({ ok: true });
 }

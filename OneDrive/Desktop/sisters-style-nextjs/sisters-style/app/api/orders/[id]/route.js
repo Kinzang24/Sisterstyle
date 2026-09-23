@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import db from "@/lib/db";
+import { queryOne, query, run } from "@/lib/db";
 
 const ALLOWED_STATUSES = ["pending_payment", "processing", "on_delivery", "delivered", "cancelled"];
 
 export async function GET(req, { params }) {
   const session = await auth();
   const { id } = await params;
-  const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
+  const order = await queryOne("SELECT * FROM orders WHERE id = $1", [id]);
   if (!order) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const isOwner = session?.user?.id && Number(session.user.id) === order.user_id;
   const isAdmin = session?.user?.role === "admin";
   if (!isOwner && !isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  order.items = db.prepare("SELECT name, price, qty FROM order_items WHERE order_id = ?").all(id);
+  order.items = await query("SELECT name, price, qty FROM order_items WHERE order_id = $1", [id]);
   return NextResponse.json(order);
 }
 
@@ -30,10 +30,10 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
-  db.prepare("UPDATE orders SET status = ? WHERE id = ?").run(status, id);
-  const order = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
+  await run("UPDATE orders SET status = $1 WHERE id = $2", [status, id]);
+  const order = await queryOne("SELECT * FROM orders WHERE id = $1", [id]);
   if (!order) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  order.items = db.prepare("SELECT name, price, qty FROM order_items WHERE order_id = ?").all(id);
+  order.items = await query("SELECT name, price, qty FROM order_items WHERE order_id = $1", [id]);
   return NextResponse.json(order);
 }

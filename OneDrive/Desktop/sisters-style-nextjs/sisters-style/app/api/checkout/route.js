@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import db, { transaction } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
 import { SHIPPING_FEE } from "@/lib/currency";
 import { STRIPE_ENABLED, createStripeCheckoutSession } from "@/lib/payments";
 
@@ -22,13 +22,12 @@ export async function POST(req) {
     );
   }
 
-  const cartRows = db
-    .prepare(
-      `SELECT ci.product_id as productId, ci.qty, p.name, p.price
-       FROM cart_items ci JOIN products p ON p.id = ci.product_id
-       WHERE ci.user_id = ?`
-    )
-    .all(session.user.id);
+  const cartRows = await query(
+    `SELECT ci.product_id as "productId", ci.qty, p.name, p.price
+     FROM cart_items ci JOIN products p ON p.id = ci.product_id
+     WHERE ci.user_id = $1`,
+    [session.user.id]
+  );
 
   if (cartRows.length === 0) {
     return NextResponse.json({ error: "Your cart is empty" }, { status: 400 });
@@ -40,35 +39,36 @@ export async function POST(req) {
   const orderId = "SS-" + Math.floor(100000 + Math.random() * 899999);
   const status = method === "stripe" ? "pending_payment" : "processing";
 
-  const insertOrder = db.prepare(`
-    INSERT INTO orders
-      (id, user_id, status, subtotal, shipping, total, ship_name, ship_address, ship_city, ship_zip, ship_phone, payment_provider)
-    VALUES
-      (@id, @user_id, @status, @subtotal, @shipping, @total, @ship_name, @ship_address, @ship_city, @ship_zip, @ship_phone, @payment_provider)
-  `);
-  const insertItem = db.prepare(
-    "INSERT INTO order_items (order_id, product_id, name, price, qty) VALUES (?, ?, ?, ?, ?)"
-  );
+  await withTransaction(async (client) => {
+    await client.query(
+      `INSERT INTO orders
+        (id, user_id, status, subtotal, shipping, total, ship_name, ship_address, ship_city, ship_zip, ship_phone, payment_provider)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        orderId,
+        session.user.id,
+        status,
+        subtotal,
+        shipping,
+        total,
+        shipTo.name,
+        shipTo.address,
+        shipTo.city || "",
+        shipTo.zip || "",
+        shipTo.phone || "",
+        method,
+      ]
+    );
 
-  const run = transaction(() => {
-    insertOrder.run({
-      id: orderId,
-      user_id: session.user.id,
-      status,
-      subtotal,
-      shipping,
-      total,
-      ship_name: shipTo.name,
-      ship_address: shipTo.address,
-      ship_city: shipTo.city || "",
-      ship_zip: shipTo.zip || "",
-      ship_phone: shipTo.phone || "",
-      payment_provider: method,
-    });
-    cartRows.forEach((i) => insertItem.run(orderId, i.productId, i.name, i.price, i.qty));
-    db.prepare("DELETE FROM cart_items WHERE user_id = ?").run(session.user.id);
+    for (const i of cartRows) {
+      await client.query(
+        "INSERT INTO order_items (order_id, product_id, name, price, qty) VALUES ($1,$2,$3,$4,$5)",
+        [orderId, i.productId, i.name, i.price, i.qty]
+      );
+    }
+
+    await client.query("DELETE FROM cart_items WHERE user_id = $1", [session.user.id]);
   });
-  run();
 
   if (method === "stripe") {
     const baseUrl = req.headers.get("origin") || process.env.NEXTAUTH_URL || "http://localhost:3000";

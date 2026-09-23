@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { query, run } from "@/lib/db";
 import { auth } from "@/auth";
 
-export async function GET() {
-  const rows = db.prepare("SELECT * FROM products ORDER BY id DESC").all();
-  const products = rows.map((p) => ({
+function toApi(p) {
+  return {
     id: p.id,
     name: p.name,
     tags: p.tags,
     price: p.price,
     category: p.category,
     imageUrl: p.image_url,
-  }));
-  return NextResponse.json(products);
+  };
+}
+
+export async function GET() {
+  const rows = await query("SELECT * FROM products ORDER BY id DESC");
+  return NextResponse.json(rows.map(toApi));
 }
 
 export async function POST(req) {
@@ -27,16 +30,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "Please provide a valid name and price" }, { status: 400 });
   }
 
-  const info = db
-    .prepare("INSERT INTO products (name, tags, price, category, image_url) VALUES (?, ?, ?, ?, ?)")
-    .run(name.trim(), tags || "", Math.round(price), category || "new", imageUrl || "");
-
-  const product = db.prepare("SELECT * FROM products WHERE id = ?").get(info.lastInsertRowid);
-  return NextResponse.json(
-    {
-      id: product.id, name: product.name, tags: product.tags,
-      price: product.price, category: product.category, imageUrl: product.image_url,
-    },
-    { status: 201 }
+  const { rows } = await run(
+    "INSERT INTO products (name, tags, price, category, image_url) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    [name.trim(), tags || "", Math.round(price), category || "new", imageUrl || ""]
   );
+
+  return NextResponse.json(toApi(rows[0]), { status: 201 });
 }

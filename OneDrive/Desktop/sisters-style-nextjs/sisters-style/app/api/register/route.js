@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import db from "@/lib/db";
+import { queryOne, run } from "@/lib/db";
 
 export async function POST(req) {
   const { name, email, password } = await req.json();
@@ -13,15 +13,16 @@ export async function POST(req) {
   }
 
   const cleanEmail = email.toLowerCase().trim();
-  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(cleanEmail);
+  const existing = await queryOne("SELECT id FROM users WHERE email = $1", [cleanEmail]);
   if (existing) {
     return NextResponse.json({ error: "An account with that email already exists" }, { status: 409 });
   }
 
   const passwordHash = bcrypt.hashSync(password, 10);
-  const info = db
-    .prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)")
-    .run(name.trim(), cleanEmail, passwordHash);
+  const { rows } = await run(
+    "INSERT INTO users (name, email, password_hash) VALUES ($1,$2,$3) RETURNING id",
+    [name.trim(), cleanEmail, passwordHash]
+  );
 
-  return NextResponse.json({ id: info.lastInsertRowid }, { status: 201 });
+  return NextResponse.json({ id: rows[0].id }, { status: 201 });
 }

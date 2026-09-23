@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db";
+import { run } from "@/lib/db";
 import { getStripe } from "@/lib/payments";
 
-// Stripe needs the raw request body to verify the webhook signature.
 export async function POST(req) {
   const stripe = getStripe();
   if (!stripe) {
@@ -23,10 +22,10 @@ export async function POST(req) {
     const session = event.data.object;
     const orderId = session.metadata?.orderId;
     if (orderId) {
-      db.prepare("UPDATE orders SET status = 'processing', payment_ref = ? WHERE id = ?").run(
+      await run("UPDATE orders SET status = 'processing', payment_ref = $1 WHERE id = $2", [
         session.id,
-        orderId
-      );
+        orderId,
+      ]);
     }
   }
 

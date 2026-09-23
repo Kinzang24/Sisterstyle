@@ -1,22 +1,21 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import db from "@/lib/db";
+import { query, run } from "@/lib/db";
 
-function getWishlist(userId) {
-  return db
-    .prepare(
-      `SELECT p.id, p.name, p.tags, p.price, p.category, p.image_url as imageUrl
-       FROM wishlist_items wi JOIN products p ON p.id = wi.product_id
-       WHERE wi.user_id = ?
-       ORDER BY wi.id DESC`
-    )
-    .all(userId);
+async function getWishlist(userId) {
+  return query(
+    `SELECT p.id, p.name, p.tags, p.price, p.category, p.image_url as "imageUrl"
+     FROM wishlist_items wi JOIN products p ON p.id = wi.product_id
+     WHERE wi.user_id = $1
+     ORDER BY wi.id DESC`,
+    [userId]
+  );
 }
 
 export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json([]);
-  return NextResponse.json(getWishlist(session.user.id));
+  return NextResponse.json(await getWishlist(session.user.id));
 }
 
 export async function POST(req) {
@@ -26,9 +25,10 @@ export async function POST(req) {
   const { productId } = await req.json();
   if (!productId) return NextResponse.json({ error: "Missing productId" }, { status: 400 });
 
-  db.prepare(
-    "INSERT OR IGNORE INTO wishlist_items (user_id, product_id) VALUES (?, ?)"
-  ).run(session.user.id, productId);
+  await run(
+    "INSERT INTO wishlist_items (user_id, product_id) VALUES ($1,$2) ON CONFLICT DO NOTHING",
+    [session.user.id, productId]
+  );
 
-  return NextResponse.json(getWishlist(session.user.id));
+  return NextResponse.json(await getWishlist(session.user.id));
 }
