@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import fs from "fs";
-import path from "path";
+import { put } from "@vercel/blob";
 import { v4 as uuidv4 } from "uuid";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -25,13 +24,20 @@ export async function POST(req) {
     return NextResponse.json({ error: "Please upload a JPG, PNG, WEBP, or GIF image" }, { status: 400 });
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
   const ext = (file.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
   const filename = `${uuidv4()}.${ext}`;
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  fs.mkdirSync(uploadDir, { recursive: true });
-  fs.writeFileSync(path.join(uploadDir, filename), bytes);
-
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  try {
+    const blob = await put(filename, file, {
+      access: "public",
+      contentType: file.type,
+    });
+    return NextResponse.json({ url: blob.url });
+  } catch (err) {
+    console.error("[upload] Blob upload failed:", err);
+    return NextResponse.json(
+      { error: "Upload failed — check that Blob storage is set up (BLOB_READ_WRITE_TOKEN)" },
+      { status: 500 }
+    );
+  }
 }
