@@ -28,7 +28,6 @@ export async function PATCH(req) {
   const body = await req.json();
   const fields = [];
   const values = [];
-  let i = 1;
 
   const columnMap = {
     name: "name",
@@ -44,8 +43,8 @@ export async function PATCH(req) {
 
   for (const [key, col] of Object.entries(columnMap)) {
     if (body[key] !== undefined) {
-      fields.push(`${col} = $${i++}`);
       values.push(typeof body[key] === "boolean" ? (body[key] ? 1 : 0) : body[key]);
+      fields.push(`${col} = $${values.length}`);
     }
   }
 
@@ -57,21 +56,21 @@ export async function PATCH(req) {
       session.user.id,
     ]);
     if (existing) return NextResponse.json({ error: "That email is already in use" }, { status: 409 });
-    fields.push(`email = $${i++}`);
     values.push(email);
+    fields.push(`email = $${values.length}`);
   }
 
   if (body.newPassword) {
     if (body.newPassword.length < 4) {
       return NextResponse.json({ error: "Password must be at least 4 characters" }, { status: 400 });
     }
-    fields.push(`password_hash = $${i++}`);
     values.push(bcrypt.hashSync(body.newPassword, 10));
+    fields.push(`password_hash = $${values.length}`);
   }
 
   if (fields.length) {
     values.push(session.user.id);
-    await run(`UPDATE users SET ${fields.join(", ")} WHERE id = $${i}`, values);
+    await run(`UPDATE users SET ${fields.join(", ")} WHERE id = $${values.length}`, values);
   }
 
   return NextResponse.json(await getUser(session.user.id));

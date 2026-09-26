@@ -20,7 +20,7 @@ export async function POST(req) {
 
   const passwordHash = bcrypt.hashSync(password, 10);
   const { rows } = await run(
-    "INSERT INTO users (name, email, password_hash) VALUES ($1,$2,$3) RETURNING id",
+    "INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id",
     [name.trim(), cleanEmail, passwordHash]
   );
 

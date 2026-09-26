@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
-import { query, run } from "@/lib/db";
+import { query, run, queryOne } from "@/lib/db";
 import { auth } from "@/auth";
 
-function toApi(p) {
-  return {
+export async function GET() {
+  const rows = await query("SELECT * FROM products ORDER BY id DESC");
+  const products = rows.map((p) => ({
     id: p.id,
     name: p.name,
     tags: p.tags,
     price: p.price,
     category: p.category,
     imageUrl: p.image_url,
-  };
-}
-
-export async function GET() {
-  const rows = await query("SELECT * FROM products ORDER BY id DESC");
-  return NextResponse.json(rows.map(toApi));
+  }));
+  return NextResponse.json(products);
 }
 
 export async function POST(req) {
@@ -31,9 +28,16 @@ export async function POST(req) {
   }
 
   const { rows } = await run(
-    "INSERT INTO products (name, tags, price, category, image_url) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    "INSERT INTO products (name, tags, price, category, image_url) VALUES ($1,$2,$3,$4,$5) RETURNING id",
     [name.trim(), tags || "", Math.round(price), category || "new", imageUrl || ""]
   );
 
-  return NextResponse.json(toApi(rows[0]), { status: 201 });
+  const product = await queryOne("SELECT * FROM products WHERE id = $1", [rows[0].id]);
+  return NextResponse.json(
+    {
+      id: product.id, name: product.name, tags: product.tags,
+      price: product.price, category: product.category, imageUrl: product.image_url,
+    },
+    { status: 201 }
+  );
 }

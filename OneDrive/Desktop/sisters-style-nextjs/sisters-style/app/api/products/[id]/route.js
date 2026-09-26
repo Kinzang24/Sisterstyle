@@ -31,12 +31,13 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Please provide a valid name and price" }, { status: 400 });
   }
 
-  const { rows } = await run(
-    "UPDATE products SET name=$1, tags=$2, price=$3, category=$4, image_url=$5 WHERE id=$6 RETURNING *",
+  await run(
+    "UPDATE products SET name=$1, tags=$2, price=$3, category=$4, image_url=$5 WHERE id=$6",
     [name.trim(), tags || "", Math.round(price), category || "new", imageUrl || "", id]
   );
 
-  return NextResponse.json(toApi(rows[0]));
+  const product = await queryOne("SELECT * FROM products WHERE id = $1", [id]);
+  return NextResponse.json(toApi(product));
 }
 
 export async function DELETE(req, { params }) {

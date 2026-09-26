@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { run } from "@/lib/db";
 import { getStripe } from "@/lib/payments";
 
+// Stripe needs the raw request body to verify the webhook signature.
 export async function POST(req) {
   const stripe = getStripe();
   if (!stripe) {
